@@ -17,7 +17,7 @@ const nav = useNavigate();
     <div>
     <div class="jumbotron centered align-items-center">
     <div class="container  ">
-    <h1 class="display-3 mt-3 mb-3">Piqosocial</h1>
+    <h1 class="display-3 mt-3 mb-3">Shortgram</h1>
     <a class="btn btn-light btn-lg mr-2" href="/register" role="button">Register</a>
     <a class="btn btn-dark btn-lg" href="/login" role="button">Login</a>
   </div>

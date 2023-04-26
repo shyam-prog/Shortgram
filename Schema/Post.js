@@ -5,6 +5,10 @@ const PostSchema = new mongoose.Schema(
       caption: {
          type: String,
       },
+      privilegedUsers: [{
+         type:mongoose.Types.ObjectId,
+         ref: "users",
+      }],
       photo:{
           type: "String"
          },

@@ -4,7 +4,6 @@ const User = require("../Schema/User");
 
 const protect = async (req, res, next) => {
   let token;
-  
 
   if (
     req.headers.authorization &&
@@ -16,10 +15,9 @@ const protect = async (req, res, next) => {
   if (!token) {
     return next(new ErrorResponse("Not authorized to access this route", 401));
   }
-    const decoded = jwt.verify(token, "123456789");
-console.log(decoded)
+  const decoded = jwt.verify(token, "123456789");
+  console.log(decoded);
   try {
-    
     const decoded = jwt.verify(token, "123456789");
 
     const user = await User.findById(decoded.id);
@@ -29,6 +27,7 @@ console.log(decoded)
     }
 
     req.user = user;
+    console.log("Token", user);
 
     next();
   } catch (err) {
@@ -36,6 +35,4 @@ console.log(decoded)
   }
 };
 
-
-module.exports=protect;
-
+module.exports = protect;

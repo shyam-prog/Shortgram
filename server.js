@@ -1,23 +1,20 @@
-
-
-
-const express = require("express")
-const db = require('./config/db')
+const express = require("express");
+const db = require("./config/db");
 const app = express();
-const users = require('./Routes/api/users')
-const chat = require('./Routes/api/chat')
-const posts = require("./Routes/api/posts")
-const message = require("./Routes/api/message")
+const users = require("./Routes/api/users");
+const chat = require("./Routes/api/chat");
+const posts = require("./Routes/api/posts");
+const message = require("./Routes/api/message");
+const albums = require("./Routes/api/albums");
 const dotenv = require("dotenv");
-const cors = require('cors');
+const cors = require("cors");
 const bodyParser = require("body-parser");
 const passport = require("passport");
-const http = require('http');
-const socketio = require('socket.io');
-const server = http.createServer(app)
+const http = require("http");
+const socketio = require("socket.io");
+const server = http.createServer(app);
 const path = require("path");
 dotenv.config();
-
 
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
@@ -27,12 +24,10 @@ const io = require("socket.io")(server, {
   },
 });
 
-
-
 // Bodyparser middleware
 app.use(
   bodyParser.urlencoded({
-    extended: false
+    extended: false,
   })
 );
 
@@ -42,28 +37,28 @@ app.use(cors({ origin: true }));
 // Passport middleware
 app.use(passport.initialize());
 // Passport config
-require('./config/password')(passport);
+require("./config/password")(passport);
 
 // Routes
 app.use("/api/users", users);
 app.use("/api/post/", posts);
 app.use("/api/chat/", chat);
 app.use("/api/message/", message);
-
+app.use("/api/albums/", albums);
 
 io.on("connection", (socket) => {
-  console.log("User Connect")
+  console.log("User Connect");
 
   socket.on("setup", (userData) => {
-    socket.join(userData.id)
-    console.log(userData.id)
-    socket.emit("connected")
-  })
+    socket.join(userData.id);
+    console.log(userData.id);
+    socket.emit("connected");
+  });
 
   socket.on("join chat", (room) => {
-    socket.join(room)
-    console.log("User Join to ROOM :  " + room)
-  })
+    socket.join(room);
+    console.log("User Join to ROOM :  " + room);
+  });
 
   socket.on("typing", (room) => socket.in(room).emit("typing"));
   socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
@@ -78,8 +73,7 @@ io.on("connection", (socket) => {
       socket.in(user._id).emit("message recieved", newMessageRecieved);
     });
   });
-
-})
+});
 // --------------------------deployment------------------------------
 
 const __dirname1 = path.resolve();
@@ -102,4 +96,4 @@ const PORT = process.env.PORT || 4000;
 
 server.listen(PORT, () => {
   console.log("Server Work in ", PORT);
-})
+});

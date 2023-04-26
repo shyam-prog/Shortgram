@@ -23,8 +23,6 @@ router.get('/:userId',read)
 router.put('/update/:userId',check,update)
 router.get('/',auth,allUsers)
 
-
-
 router.param("userId",userById)
 
 module.exports=router
