@@ -1,7 +1,14 @@
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-import { read, unfollow } from "../api/api-post";
+import {
+  findAlbumById,
+  followAlbum,
+  getFeedAlbum,
+  read,
+  unfollow,
+  unfollowAlbum,
+} from "../api/api-post";
 import Posts from "./Posts";
 import auth from "./../auth/auth-help";
 import jwt1 from "jwt-decode";
@@ -16,13 +23,13 @@ import "./profile.css";
 import logo from "../images/IMG-20201113-WA0051.jpg"; // with import
 import NavBar from "./NavBar";
 
-const Profile = () => {
+const AlbumProfile = () => {
   const params = useParams();
   console.log(params.id);
   const nav = useNavigate();
 
   const [value, SetValues] = useState({
-    user: { following: [], followers: [], accessedAlbums: [] },
+    album: { followers: [], privilegedUsers: [] },
     following: false,
   });
 
@@ -31,12 +38,12 @@ const Profile = () => {
   const user1 = jwt1(jwt.token);
 
   useEffect(() => {
-    read({ userId: params.id }, { t: jwt.token }).then((res) => {
+    findAlbumById({ albumId: params.id }, { t: jwt.token }).then((res) => {
       if (res.name) {
         let following = checkFollow(res, user1.id);
         SetValues({
           ...value,
-          user: res,
+          album: res,
           following: following,
         });
         loadPost(res._id);
@@ -45,7 +52,7 @@ const Profile = () => {
   }, [user1.id]);
 
   const loadPost = (user) => {
-    getFeedUser(
+    getFeedAlbum(
       {
         userId: user,
       },
@@ -55,18 +62,18 @@ const Profile = () => {
     ).then((data) => setPosts(data));
   };
   const clickfollow = () => {
-    let callApi = value.following == false ? follow : unfollow;
-    callApi({ userId: user1.id }, { t: jwt.token }, value.user._id).then(
+    let callApi = value.following == false ? followAlbum : unfollowAlbum;
+    callApi({ userId: user1.id }, { t: jwt.token }, value.album._id).then(
       (data) => {
         if (data) {
           console.log(data);
           if (!value.following)
-            toast.success(`following ${value.user.name}!`, {
+            toast.success(`following ${value.album.name}!`, {
               position: toast.POSITION.TOP_RIGHT,
               autoClose: 1000,
             });
           else {
-            toast.warn(`unfollowing ${value.user.name}!`, {
+            toast.warn(`unfollowing ${value.album.name}!`, {
               position: toast.POSITION.TOP_RIGHT,
               autoClose: 1000,
             });
@@ -76,9 +83,8 @@ const Profile = () => {
       }
     );
   };
-  console.log(posts);
+  //   console.log(posts);
   console.log(
-    value,
     "INside the profile================================================"
   );
   return (
@@ -88,14 +94,14 @@ const Profile = () => {
         <div class="d-flex mb-5 mt-4 ms-lg-5 ps-lg-5 ms-0 ps-0">
           <div class="me-md-5 me-3 ms-lg-5 ms-0">
             <img
-              src={value.user.image}
+              src={value.album.image}
               alt=""
               className="rounded-circle profile_img border border-light border-3"
             />
           </div>
 
           <div class=" w-50">
-            <h3 class="mt-3 mb-4">{value.user.name}</h3>
+            <h3 class="mt-3 mb-4">{value.album.name}</h3>
             <div class="d-flex mb-3 mt-2 ">
               <div class="d-flex me-4">
                 <p class="me-1">{posts.length}</p>
@@ -103,13 +109,8 @@ const Profile = () => {
               </div>
 
               <div class="d-flex me-4">
-                <p class="me-1">{value.user.followers.length}</p>
+                <p class="me-1">{value.album.followers.length}</p>
                 <p>followers</p>
-              </div>
-
-              <div class="d-flex me-4">
-                <p class="me-1">{value.user.following.length}</p>
-                <p>following</p>
               </div>
             </div>
             {user1.id === params.id ? (
@@ -187,27 +188,13 @@ const Profile = () => {
                 class="nav-link"
                 id="pills-contact-tab"
                 data-bs-toggle="pill"
-                data-bs-target="#pills-contact"
-                type="button"
-                role="tab"
-                aria-controls="pills-contact"
-                aria-selected="false"
-              >
-                following
-              </button>
-            </li>
-            <li class="nav-item " role="presentation">
-              <button
-                class="nav-link"
-                id="pills-contact-tab"
-                data-bs-toggle="pill"
                 data-bs-target="#pills-albums"
                 type="button"
                 role="tab"
                 aria-controls="pills-albums"
                 aria-selected="false"
               >
-                your ablums
+                Privileged users
               </button>
             </li>
           </ul>
@@ -234,42 +221,7 @@ const Profile = () => {
             >
               <section className="d-flex justify-content-around mt-4">
                 <div className="d-flex flex-column  col-5">
-                  {value.user.followers.map((pers, idx) => {
-                    return (
-                      <>
-                        <div
-                          onClick={() => {
-                            window.location.href = "/user/" + pers._id;
-                          }}
-                          className="d-flex align-items-center p-2  mb-3 rounded p-3 hover"
-                        >
-                          <div>
-                            <img
-                              src={pers.image}
-                              alt="profile"
-                              style={{ width: 50, height: 50 }}
-                              className="me-3 rounded"
-                            />
-                          </div>
-                          <h6 className=" fw-bold">{pers.name}</h6>
-                          <i className="fa-solid fa-ellipsis ms-auto fs-4" />
-                        </div>
-                      </>
-                    );
-                  })}
-                </div>
-              </section>
-            </div>
-            <div
-              className="tab-pane fade"
-              id="pills-contact"
-              role="tabpanel"
-              aria-labelledby="pills-contact-tab"
-              tabIndex={0}
-            >
-              <section className="d-flex justify-content-around mt-4">
-                <div className="d-flex flex-column  col-5">
-                  {value.user.following.map((pers, idx) => {
+                  {value.album.followers.map((pers, idx) => {
                     return (
                       <>
                         <div
@@ -305,22 +257,12 @@ const Profile = () => {
           >
             <section className="d-flex justify-content-around mt-4">
               <div className="d-flex flex-column  col-5">
-                {value.user.accessedAlbums.map((pers, idx) => {
-                  fetch(``)
-                    .then((response) => response.json())
-                    .then((data) => {
-                      // Do something with the data returned by the API
-                      console.log(data);
-                    })
-                    .catch((error) => {
-                      console.error(error);
-                    });
-
+                {value.album.privilegedUsers.map((pers, idx) => {
                   return (
                     <>
                       <div
                         onClick={() => {
-                          window.location.href = "/album/" + pers._id;
+                          window.location.href = "/ablum/" + pers._id;
                         }}
                         className="d-flex align-items-center p-2  mb-3 rounded p-3 hover"
                       >
@@ -347,4 +289,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default AlbumProfile;

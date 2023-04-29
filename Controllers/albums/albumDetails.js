@@ -1,9 +1,9 @@
+const { use } = require("passport");
 const Album = require("../../Schema/Album");
 
-const findAlbumById = async (req, res) => {
-  const albumId = req.params.albumId;
+const albumParam = async (req, res, next, id) => {
   try {
-    const album = await Album.findById(albumId)
+    let album = await Album.findById(id)
       .populate("followers", "_id name image")
       .populate("privilegedUsers", "_id name image")
       .exec();
@@ -14,7 +14,7 @@ const findAlbumById = async (req, res) => {
       });
     }
     res.json(album);
-    // next();
+    next();
   } catch (err) {
     return res.status("400").json({
       error: "Could not retrieve album",
@@ -22,4 +22,4 @@ const findAlbumById = async (req, res) => {
   }
 };
 
-module.exports = findAlbumById;
+module.exports = albumParam;

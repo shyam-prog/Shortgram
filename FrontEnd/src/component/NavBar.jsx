@@ -38,9 +38,11 @@ import Stack from "@mui/material/Stack";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import Autocomplete from "@mui/material/Autocomplete";
 import { toast } from "react-toastify";
+import { addNewAlbum } from "../api/api-post";
 const NavBar = () => {
   const [search, setSearch] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
+  const [addAlbumInput, setAddAlbumInput] = useState("");
 
   const open1 = Boolean(anchorEl);
 
@@ -106,6 +108,69 @@ const NavBar = () => {
 
   return (
     <div>
+      <div
+        class="modal fade"
+        id="staticBackdrop"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+        tabindex="-1"
+        aria-labelledby="staticBackdropLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="staticBackdropLabel">
+                Add Album
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <label for="albumName">Album Name:</label>
+              <input
+                type="text"
+                name="albumName"
+                value={addAlbumInput}
+                onChange={(event) => {
+                  setAddAlbumInput(event.target.value);
+                }}
+                className="border border-dark ml-2 p-1"
+              />
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                onClick={async () => {
+                  await addNewAlbum(
+                    { name: addAlbumInput, userId: user1.id },
+                    { t: jwt.token }
+                  );
+                  toast.success("Album created Successfully!", {
+                    position: toast.POSITION.TOP_RIGHT,
+                    autoClose: 1000,
+                  });
+                }}
+                data-bs-dismiss="modal"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
       <nav className="py-2 position-fixed top-0 pr-4 start-0 w-100 shadow-sm">
         <div className="container d-flex justify-content-between align-items-center w-100 bg-white">
           <a style={{ textDecoration: "none", color: "black" }}>
@@ -181,6 +246,13 @@ const NavBar = () => {
             </Stack>
           </div>
           <div className="logo rounded-circle d-flex align-items-center">
+            <button
+              class="btn btn-primary mr-3"
+              data-bs-toggle="modal"
+              data-bs-target="#staticBackdrop"
+            >
+              Add Album
+            </button>
             <i
               className="fa-solid fa-right-to-bracket fs-3 me-4"
               onClick={() => {
