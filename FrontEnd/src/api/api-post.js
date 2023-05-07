@@ -70,6 +70,7 @@ const getFeedUser = async (params, credentials, signal) => {
     );
 
     const Data = await response.json();
+    console.log(Data, "=======Inside get feed api=========");
     return Data;
   } catch (err) {
     return err;
@@ -411,13 +412,15 @@ const getFeedAlbum = async (params, credentials) => {
       },
       authorization: credentials.t,
     };
+    console.log(params.albumId, "========================indside getFeedAlbum");
 
     let response = await fetch(
-      "http://localhost:4000/api/albums/feedAlbum/" + params.userId,
+      "http://localhost:4000/api/albums/feedAlbum/" + params.albumId,
       requestOptions
     );
 
     const Data = await response.json();
+
     return Data;
   } catch (err) {
     return err;
@@ -462,6 +465,57 @@ const unfollowAlbum = async (params, credentials, unfollowId) => {
   }
 };
 
+const createAlbumPost = async (params, credentials, post) => {
+  console.log(post);
+  try {
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: credentials.t,
+      },
+      authorization: credentials.t,
+      body: JSON.stringify(post),
+    };
+
+    let response = await fetch(
+      "http://localhost:4000/api/albums/post/" + params.albumId,
+      requestOptions
+    );
+
+    const Data = await response.json();
+    return Data;
+  } catch (err) {
+    return err;
+  }
+};
+
+const giveAccessRights = async (credentials, data) => {
+  try {
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: credentials.t,
+      },
+      authorization: credentials.t,
+      body: JSON.stringify(data),
+    };
+
+    let response = await fetch(
+      "http://localhost:4000/api/albums/giveAccess",
+      requestOptions
+    );
+
+    const Data = await response.json();
+    return Data;
+  } catch (err) {
+    return err;
+  }
+};
+
 export {
   searchuser,
   fetchChats,
@@ -487,4 +541,6 @@ export {
   getFeedAlbum,
   followAlbum,
   unfollowAlbum,
+  createAlbumPost,
+  giveAccessRights,
 };

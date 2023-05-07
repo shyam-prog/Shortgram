@@ -1,13 +1,13 @@
 import React from "react";
 import { useState } from "react";
-import auth from "./../auth/auth-help";
+import auth from "../auth/auth-help";
 import jwt1 from "jwt-decode"; // import dependency
 import { useEffect } from "react";
-import { create } from "../api/api-post";
 import { toast } from "react-toastify";
 import PulseLoader from "react-spinners/PulseLoader";
 import BarLoader from "react-spinners/PulseLoader";
 import axios from "axios";
+import { createAlbumPost } from "../api/api-post";
 import { useReducer } from "react";
 
 const Post = (props1) => {
@@ -17,6 +17,11 @@ const Post = (props1) => {
   const [picLoading, setPicLoading] = useState(false);
   const [picLoading1, setPicLoading1] = useState(false);
   const jwt = auth.isAuthenticated();
+  const album = {
+    id: props1.albumId,
+    name: props1.albumName,
+  };
+
   const user = jwt1(jwt.token);
 
   const submitHandler = async (props) => {
@@ -35,11 +40,11 @@ const Post = (props1) => {
       const PostData = {
         Text,
         pic,
-        user,
+        album,
       };
-      create(
+      createAlbumPost(
         {
-          userId: user.id,
+          albumId: album.id,
         },
         {
           t: jwt.token,
@@ -48,7 +53,7 @@ const Post = (props1) => {
       ).then((d) => {
         setPic("");
         setText("");
-        props1.onAdd1(d);
+        props1.onAdd(d);
       });
       setText("");
       document.getElementById("file").value = "";
@@ -114,7 +119,7 @@ const Post = (props1) => {
               rows={2}
               onChange={(e) => setText(e.target.value)}
               className="outline w-75 "
-              placeholder={"Share your thoughts " + user.name}
+              placeholder={"Share your thoughts " + album.name}
             />
             <button
               onClick={submitHandler}

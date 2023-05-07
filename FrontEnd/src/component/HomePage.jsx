@@ -85,7 +85,14 @@ const HomePage = () => {
               <MoonLoader color="#077ce8" cssOverride={{}} loading size={60} />
             ) : null}
             {posts.map((post, idx) => {
-              return <Posts updatePosts={updata} key={idx} post={post} />;
+              return (
+                <Posts
+                  updatePosts={updata}
+                  key={idx}
+                  post={post}
+                  hasEditRights={post.userDetails.id === user1.id}
+                />
+              );
             })}
           </div>
           <FindPeople />

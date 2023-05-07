@@ -7,6 +7,7 @@ const userById = async (req, res, next, id) => {
       .populate("following", "_id name image")
       .populate("followers", "_id name image")
       .populate("accessedAlbums", "_id name image")
+      .populate("followedAlbums", "_id name image")
       .exec();
 
     if (!user) {

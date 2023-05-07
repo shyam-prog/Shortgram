@@ -107,7 +107,7 @@ const Posts = (props) => {
   return (
     <div>
       <section className="posts border border_radius border-secondary mt-3  overflow-hidden p-0 white border position-relative">
-        {props.post.userDetails.id == user1.id ? (
+        {(props.post.userDetails.id == user1.id) || props?.hasEditRights ? (
           <i
             className="fa-regular fa-trash-can position-absolute pt-4 fs-5 trash"
             onClick={deletePost}
@@ -117,7 +117,7 @@ const Posts = (props) => {
         <div className="name d-flex pl-3 pt-3">
           <div>
             <img
-              src={props.post.author.image}
+              src={props.post?.author?.image || props.post?.album?.image}
               alt="profile"
               style={{ width: 50, height: 50 }}
               className="rounded-circle me-3"
@@ -131,7 +131,7 @@ const Posts = (props) => {
               }}
               className="mb-0 fw-bold fs-5"
             >
-              {props.post.author.name}
+              {props.post?.author?.name || props.post?.album?.name}
             </p>
             <p className="text">
               {new Date(props.post.created).toLocaleString()}

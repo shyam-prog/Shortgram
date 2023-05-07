@@ -1,25 +1,19 @@
-const { use } = require("passport");
-const Album = require("../../Schema/Album");
+const Post = require("../../Schema/Post");
 
-const albumParam = async (req, res, next, id) => {
+const listAlbumPosts = async (req, res) => {
+  console.log;
   try {
-    let album = await Album.findById(id)
-      .populate("followers", "_id name image")
-      .populate("privilegedUsers", "_id name image")
+    let posts = await Post.find({ author: req.params.userId })
+      .populate("album", "_id name image")
+      .populate("comments.commentedBy", "_id name image")
+      .sort("-created")
       .exec();
-
-    if (!album) {
-      return res.status("400").json({
-        error: "album not found",
-      });
-    }
-    res.json(album);
-    next();
-  } catch (err) {
-    return res.status("400").json({
-      error: "Could not retrieve album",
+    res.json(posts);
+  } catch (error) {
+    return res.status(400).json({
+      error: error,
     });
   }
 };
 
-module.exports = albumParam;
+module.exports = listAlbumPosts;

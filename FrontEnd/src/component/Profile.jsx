@@ -22,7 +22,12 @@ const Profile = () => {
   const nav = useNavigate();
 
   const [value, SetValues] = useState({
-    user: { following: [], followers: [], accessedAlbums: [] },
+    user: {
+      following: [],
+      followers: [],
+      accessedAlbums: [],
+      followedAlbums: [],
+    },
     following: false,
   });
 
@@ -32,6 +37,7 @@ const Profile = () => {
 
   useEffect(() => {
     read({ userId: params.id }, { t: jwt.token }).then((res) => {
+      console.log(res, "=======insider user profile fetch");
       if (res.name) {
         let following = checkFollow(res, user1.id);
         SetValues({
@@ -53,6 +59,24 @@ const Profile = () => {
         t: jwt.token,
       }
     ).then((data) => setPosts(data));
+  };
+
+  const updata = (post) => {
+    console.log(post);
+
+    let updated = [...posts];
+    console.log(updated);
+
+    updated = updated.filter(function (item) {
+      return item._id !== post._id;
+    });
+    setTimeout(function () {
+      toast.success("Post Deleted", {
+        position: toast.POSITION.TOP_LEFT,
+        autoClose: 1500,
+      });
+      setPosts(updated);
+    }, 100);
   };
   const clickfollow = () => {
     let callApi = value.following == false ? follow : unfollow;
@@ -108,7 +132,10 @@ const Profile = () => {
               </div>
 
               <div class="d-flex me-4">
-                <p class="me-1">{value.user.following.length}</p>
+                <p class="me-1">
+                  {value.user.following.length +
+                    value.user.followedAlbums.length}
+                </p>
                 <p>following</p>
               </div>
             </div>
@@ -207,7 +234,7 @@ const Profile = () => {
                 aria-controls="pills-albums"
                 aria-selected="false"
               >
-                your ablums
+                albums
               </button>
             </li>
           </ul>
@@ -221,7 +248,13 @@ const Profile = () => {
             >
               <div class="left  col-lg-9 col-sm-12  col-sm-12  h-100  border_radius mt-4 m-auto">
                 {posts.map((post) => {
-                  return <Posts post={post} />;
+                  return (
+                    <Posts
+                      updatePosts={updata}
+                      post={post}
+                      hasEditRights={post.userDetails.id === user1.id}
+                    />
+                  );
                 })}
               </div>
             </div>
@@ -292,6 +325,33 @@ const Profile = () => {
                       </>
                     );
                   })}
+                  {value.user.followedAlbums.map((pers, idx) => {
+                    console.log(
+                      pers,
+                      "==========inside followed albums============"
+                    );
+                    return (
+                      <>
+                        <div
+                          onClick={() => {
+                            window.location.href = "/album/" + pers._id;
+                          }}
+                          className="d-flex align-items-center p-2  mb-3 rounded p-3 hover"
+                        >
+                          <div>
+                            <img
+                              src={pers.image}
+                              alt="profile"
+                              style={{ width: 50, height: 50 }}
+                              className="me-3 rounded"
+                            />
+                          </div>
+                          <h6 className=" fw-bold">{pers.name}</h6>
+                          <i className="fa-solid fa-ellipsis ms-auto fs-4" />
+                        </div>
+                      </>
+                    );
+                  })}
                 </div>
               </section>
             </div>
@@ -306,16 +366,6 @@ const Profile = () => {
             <section className="d-flex justify-content-around mt-4">
               <div className="d-flex flex-column  col-5">
                 {value.user.accessedAlbums.map((pers, idx) => {
-                  fetch(``)
-                    .then((response) => response.json())
-                    .then((data) => {
-                      // Do something with the data returned by the API
-                      console.log(data);
-                    })
-                    .catch((error) => {
-                      console.error(error);
-                    });
-
                   return (
                     <>
                       <div

@@ -3,6 +3,7 @@ const User = require("../../Schema/User");
 
 const addPrivilegedUser = async (req, res) => {
   const { albumId, userId } = req.body;
+  console.log(albumId, userId, "========inside giveAccess backend======");
   try {
     const album = await Album.findById(albumId);
     if (!album) {
@@ -12,7 +13,8 @@ const addPrivilegedUser = async (req, res) => {
 
     if (!album.privilegedUsers.includes(userId)) {
       album.privilegedUsers.push(userId);
-      const user = User.findById(userId);
+      console.log(album.privilegedUsers);
+      const user = await User.findById(userId);
       user.accessedAlbums.push(albumId);
       await user.save();
       await album.save();
