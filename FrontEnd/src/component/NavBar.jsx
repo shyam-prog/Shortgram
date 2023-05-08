@@ -228,7 +228,7 @@ const NavBar = () => {
                     size="small"
                     onChange={(e) => setSearch(e.target.value)}
                     {...params}
-                    placeholder="Search To Chat"
+                    placeholder="Search Users"
                     InputProps={{
                       ...params.InputProps,
                       endAdornment: (
@@ -278,6 +278,7 @@ const NavBar = () => {
                 height="40px"
                 className="rounded-circle"
               />
+              <span className="ml-3">{values.name}</span>
             </div>
           </div>
         </div>
